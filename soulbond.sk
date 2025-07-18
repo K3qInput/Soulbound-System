@@ -1,0 +1,92 @@
+# Soulbind Command
+
+command /soulbind:
+
+    permission: lifesteal.soulbind
+
+    permission message: "&cYou don't have permission to use this command!"
+
+    trigger:
+
+        if player's tool is not air:
+
+            if player has a diamond named "&bSoul Gem" with lore "&7A mysterious gem containing life essence.":
+
+                if player's max health > 2:
+
+                    remove 1 diamond named "&bSoul Gem" with lore "&7A mysterious gem containing life essence." from player's inventory
+
+                    add "Soulbound" to lore of player's tool
+
+                    set player's max health to player's max health - 2
+
+                    send "&aThe item in your hand has been soulbound! You have lost 1 heart."
+
+                else:
+
+                    send "&cYou don't have enough hearts to soulbind an item."
+
+            else:
+
+                send "&cYou need a &bSoul Gem &cto soulbind an item!"
+
+        else:
+
+            send "&cYou must hold an item in your hand to soulbind it!"
+
+# Store Soulbound Items on Death
+
+on death:
+
+    if victim is a player:
+
+        loop drops:
+
+            if lore of loop-value contains "Soulbound":
+
+                add loop-value to {soulbound.%victim%::*}
+
+                remove loop-value from drops
+
+# Return Soulbound Items After Respawn
+
+on respawn:
+
+    if {soulbound.%player%::*} is set:
+
+        loop {soulbound.%player%::*}:
+
+            give player loop-value
+
+        delete {soulbound.%player%::*}
+
+        send "&6Your soulbound items have been returned to you!"
+
+# Get Soul Gem Command (Admin Use)
+
+command /getsoulgem:
+
+    permission: lifesteal.soulgem
+
+    permission message: "&cYou don't have permission to use this command!"
+
+    trigger:
+
+        give player a diamond named "&bSoul Gem" with lore "&7A mysterious gem containing life essence."
+
+        send "&aYou have received a &bSoul Gem!"
+
+# Obtain Soul Gem Through Drops (Example: Killing Zombies)
+
+on death:
+
+    if attacker is a player:
+
+        if victim is a zombie:
+
+            chance of 15%:
+
+                drop a diamond named "&bSoul Gem" with lore "&7A mysterious gem containing life essence."
+
+                send "&eThe zombie dropped a &bSoul Gem!" to the attacker
+
